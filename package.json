@@ -1,5 +1,5 @@
 {
-  "name": "stlap",
+  "name": "@kenken9809/stlap",
   "version": "0.0.1",
   "description": "Stlap: the STory LAnguage Processor",
   "main": "./dst/main.js",
