@@ -27,7 +27,9 @@ export async function getBuffer(fileName: string | null): Promise<Buffer> {
   let b: Buffer;
   switch (fileName) {
     case "-":
-      b = fs.readFileSync(process.stdin.fd);
+      const buffers = [];
+      for await (const chunk of process.stdin) buffers.push(chunk);
+      b = Buffer.concat(buffers);
       break;
 
     default:
