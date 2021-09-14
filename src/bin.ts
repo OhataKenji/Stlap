@@ -11,11 +11,11 @@ program
 
 try {
   const fileName = getFilename(program.args);
-  const b: Buffer = getBuffer(fileName);
-
-  const text = b.toString();
-  console.log("OUTPUT");
-  console.log(text);
+  getBuffer(fileName).then((b) => {
+    const text = b.toString();
+    console.log("OUTPUT");
+    console.log(text);
+  });
 } catch (err) {
   console.error(err);
 }

@@ -17,9 +17,11 @@ export function getFilename(args: string[]): string | null {
   }
 }
 
-export function getBuffer(fileName: string | null): Buffer {
+export async function getBuffer(fileName: string | null): Promise<Buffer> {
   if (fileName === null) {
-    return fs.readFileSync(process.stdin.fd);
+    const buffers = [];
+    for await (const chunk of process.stdin) buffers.push(chunk);
+    return Promise.resolve(Buffer.concat(buffers));
   }
 
   let b: Buffer;
@@ -31,5 +33,5 @@ export function getBuffer(fileName: string | null): Buffer {
     default:
       b = fs.readFileSync(fileName);
   }
-  return b;
+  return Promise.resolve(b);
 }
