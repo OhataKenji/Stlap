@@ -1,6 +1,6 @@
 import fs from "fs";
 
-export function getFilename(args: string[]): string | null {
+export function getFilename(args: string[]): string | null | Error {
   switch (args.length) {
     case 0:
       return null;
@@ -11,7 +11,7 @@ export function getFilename(args: string[]): string | null {
       break;
 
     default:
-      throw new Error(
+      return new Error(
         "Invalid number of arguments ファイルは一つ指定してください"
       );
   }
