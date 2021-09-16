@@ -1,21 +1,29 @@
 import { Command } from "commander";
-import fs from "fs";
 import { getFilename, getBuffer } from "./util";
 
-const program = new Command();
-program
-  .version("0.0.1")
-  .usage("[options] <file>")
-  .option("-l, --line", "Output lines セリフを出力")
-  .parse(process.argv);
+async function main() {
+  const program = new Command();
+  program
+    .version("0.0.1")
+    .usage("[options] <file>")
+    .option("-l, --line", "Output lines セリフを出力")
+    .parse(process.argv);
 
-try {
   const fileName = getFilename(program.args);
-  getBuffer(fileName).then((b) => {
-    const text = b.toString();
-    console.log("OUTPUT");
-    console.log(text);
-  });
-} catch (err) {
-  console.error(err);
+  if (fileName instanceof Error) {
+    console.error(fileName.message);
+    return;
+  }
+
+  const b = await getBuffer(fileName);
+  if (b instanceof Error) {
+    console.error(b.message);
+    return;
+  }
+
+  const text = b.toString();
+  console.log("OUTPUT");
+  console.log(text);
 }
+
+main();

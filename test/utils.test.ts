@@ -20,3 +20,12 @@ describe("getFilename", () => {
     expect(output).toBeInstanceOf(Error);
   });
 });
+
+describe("getBuffer", () => {
+  {
+    test("Wrong file naem", async () => {
+      const output = await getBuffer("NOT_EXITING_FILE.NOT_EXIT");
+      expect(output).toBeInstanceOf(Error);
+    });
+  }
+});

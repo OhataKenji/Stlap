@@ -17,14 +17,16 @@ export function getFilename(args: string[]): string | null | Error {
   }
 }
 
-export async function getBuffer(fileName: string | null): Promise<Buffer> {
+export async function getBuffer(
+  fileName: string | null
+): Promise<Buffer | Error> {
   if (fileName === null) {
     const buffers = [];
     for await (const chunk of process.stdin) buffers.push(chunk);
     return Promise.resolve(Buffer.concat(buffers));
   }
 
-  let b: Buffer;
+  let b: Buffer | Error;
   switch (fileName) {
     case "-":
       const buffers = [];
@@ -33,7 +35,11 @@ export async function getBuffer(fileName: string | null): Promise<Buffer> {
       break;
 
     default:
-      b = fs.readFileSync(fileName);
+      if (fs.existsSync(fileName)) {
+        b = fs.readFileSync(fileName);
+      } else {
+        b = Error("File not found ファイルが見つかりません");
+      }
   }
   return Promise.resolve(b);
 }
