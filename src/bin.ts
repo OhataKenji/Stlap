@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { getFilename, getBuffer } from "./util";
+import { Stlap } from "./stlap";
 
 async function main() {
   const program = new Command();
@@ -21,9 +22,13 @@ async function main() {
     return;
   }
 
-  const text = b.toString();
-  console.log("OUTPUT");
-  console.log(text);
+  const stlap = Stlap.fromString(b.toString());
+  if (stlap instanceof Error) {
+    console.error(stlap.message);
+    return;
+  }
+
+  console.log(stlap.toText());
 }
 
 main();
