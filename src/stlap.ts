@@ -1,14 +1,12 @@
 export interface Passage {
   source: string;
   text: string;
-  lines: string;
 }
 
 function PassageFromString(source: string): Passage | Error {
   const src = source;
 
   const textRows: string[] = [];
-  const lines: string[] = [];
   for (const row of src.split("\n")) {
     if (row.startsWith("//")) {
       // a comment
@@ -19,17 +17,9 @@ function PassageFromString(source: string): Passage | Error {
 
     // text part
     textRows.push(row.slice());
-
-    // line part
-    if (row.startsWith("「")) {
-      if (!row.endsWith("」")) {
-        return Error("「」 Not match");
-      }
-      lines.push(row.slice(1, -1));
-    }
   }
 
-  return { source: src, text: textRows.join(""), lines: lines.join("") };
+  return { source: src, text: textRows.join("") };
 }
 
 export type Stlap = Passage[];
