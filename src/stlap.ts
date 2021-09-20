@@ -43,6 +43,11 @@ export class Stlap {
 
       output.push(passage);
     }
-    return { story: output };
+    return new Stlap(output);
+  }
+
+  toText(): string {
+    const key = "text";
+    return this.story.map((p) => p[key]).join("\n\n");
   }
 }

@@ -1,6 +1,6 @@
 import { Stlap } from "../src/stlap";
 
-describe("parse", () => {
+describe("fromString", () => {
   test("One paragraph", () => {
     const input =
       "//comment\nHello World\nthis is first test of stlap\nHave a good day";
@@ -37,5 +37,34 @@ describe("parse", () => {
     ]);
 
     expect(output).toEqual<Stlap | Error>(expected);
+  });
+});
+
+describe("toText", () => {
+  test("One paragraph", () => {
+    const source =
+      "//comment\nHello World\nthis is first test of stlap\nHave a good day";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+    const expected = "Hello Worldthis is first test of stlapHave a good day";
+
+    expect(output).toEqual<String>(expected);
+  });
+
+  test("Three paragraph", () => {
+    const source =
+      "//comment\nHello World\nthis is first test of stlap\n\n\n\nHave a good day\n\nTESTTESTTEST\n//comment2";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+
+    const expected =
+      "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST";
+    expect(output).toEqual<string>(expected);
   });
 });
