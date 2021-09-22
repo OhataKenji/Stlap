@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "build": "webpack --config webpack.prod.js",
     "watch": "webpack --watch --config webpack.dev.js",
     "prepublish": "webpack --config webpack.prod.js"
