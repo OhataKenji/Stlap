@@ -5,11 +5,7 @@ import { Stlap } from "./stlap";
 
 async function main() {
   const program = new Command();
-  program
-    .version(version)
-    .usage("[options] <file>")
-    .option("-l, --line", "Output lines セリフを出力")
-    .parse(process.argv);
+  program.version(version).usage("[options] <file>").parse(process.argv);
 
   const fileName = getFilename(program.args);
   if (fileName instanceof Error) {
