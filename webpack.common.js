@@ -3,7 +3,6 @@ const webpack = require("webpack");
 
 module.exports = {
   target: "node",
-  mode: "development",
   entry: { main: "./src/main.ts", bin: "./src/bin.ts" },
 
   output: {
