@@ -1,3 +1,4 @@
+import { version } from "../package.json";
 import { Command } from "commander";
 import { getFilename, getBuffer } from "./util";
 import { Stlap } from "./stlap";
@@ -5,7 +6,7 @@ import { Stlap } from "./stlap";
 async function main() {
   const program = new Command();
   program
-    .version("0.0.1")
+    .version(version)
     .usage("[options] <file>")
     .option("-l, --line", "Output lines セリフを出力")
     .parse(process.argv);
