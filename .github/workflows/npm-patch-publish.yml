@@ -36,7 +36,7 @@ jobs:
           git config user.email github-actions@github.com
       - run: npm ci
       - run: npm version patch
-      - run: git push origin main
+      - run: git push --tags origin main
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
