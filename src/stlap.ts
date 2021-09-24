@@ -1,10 +1,35 @@
+export class Flag {
+  readonly name: string;
+  private type = "flag" as const;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
+export class Collect {
+  readonly name: string;
+  private type = "collect" as const;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+
 export class Passage {
   source: string;
   text: string;
+  readonly flags: Flag[];
+  readonly collects: Collect[];
 
-  constructor(source: string, text: string) {
+  constructor(
+    source: string,
+    text: string,
+    flags: Flag[],
+    collects: Collect[]
+  ) {
     this.source = source;
     this.text = text;
+    this.flags = flags;
+    this.collects = collects;
   }
 
   static fromString(source: string): Passage | Error {
@@ -23,7 +48,7 @@ export class Passage {
       textRows.push(row.slice());
     }
 
-    return { source: src, text: textRows.join("") };
+    return new Passage(src, textRows.join(""), [], []);
   }
 }
 

@@ -10,6 +10,8 @@ describe("fromString", () => {
       {
         source: input,
         text: "Hello Worldthis is first test of stlapHave a good day",
+        flags: [],
+        collects: [],
       },
     ]);
 
@@ -25,14 +27,20 @@ describe("fromString", () => {
       {
         source: "//comment\nHello World\nthis is first test of stlap",
         text: "Hello Worldthis is first test of stlap",
+        flags: [],
+        collects: [],
       },
       {
         source: "Have a good day",
         text: "Have a good day",
+        flags: [],
+        collects: [],
       },
       {
         source: "TESTTESTTEST\n//comment2",
         text: "TESTTESTTEST",
+        flags: [],
+        collects: [],
       },
     ]);
 
