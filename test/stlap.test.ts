@@ -1,4 +1,4 @@
-import { Stlap } from "../src/stlap";
+import { Stlap, Flag, Collect } from "../src/stlap";
 
 describe("fromString", () => {
   test("One paragraph", () => {
@@ -41,6 +41,52 @@ describe("fromString", () => {
         text: "TESTTESTTEST",
         flags: [],
         collects: [],
+      },
+    ]);
+
+    expect(output).toEqual<Stlap | Error>(expected);
+  });
+
+  test("One paragraph with flag", () => {
+    const input =
+      "//comment\n@flag the_first_flag\nHello World\nthis is first test of stlap\nHave a good day";
+    const output = Stlap.fromString(input);
+
+    const expected = new Stlap([
+      {
+        source: input,
+        text: "Hello Worldthis is first test of stlapHave a good day",
+        flags: [new Flag("the_first_flag")],
+        collects: [],
+      },
+    ]);
+
+    expect(output).toEqual<Stlap | Error>(expected);
+  });
+
+  test("Three paragraph with flag and collect", () => {
+    const input =
+      "//comment\nHello World\n@flag flag1\nthis is first test of stlap\n\n\n\nHave a good day\n\nTESTTESTTEST\n//comment2\n@collect flag1";
+    const output = Stlap.fromString(input);
+
+    const expected = new Stlap([
+      {
+        source: "//comment\nHello World\nthis is first test of stlap",
+        text: "Hello Worldthis is first test of stlap",
+        flags: [new Flag("flag1")],
+        collects: [],
+      },
+      {
+        source: "Have a good day",
+        text: "Have a good day",
+        flags: [],
+        collects: [],
+      },
+      {
+        source: "TESTTESTTEST\n//comment2",
+        text: "TESTTESTTEST",
+        flags: [],
+        collects: [new Collect("flag1")],
       },
     ]);
 
