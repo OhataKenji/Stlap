@@ -1,4 +1,4 @@
-import { Stlap, Flag, Collect } from "../src/stlap";
+import { Stlap, Passage, Flag, Collect } from "../src/stlap";
 
 describe("fromString", () => {
   test("One paragraph", () => {
@@ -71,7 +71,8 @@ describe("fromString", () => {
 
     const expected = new Stlap([
       {
-        source: "//comment\nHello World\nthis is first test of stlap",
+        source:
+          "//comment\nHello World\n@flag flag1\nthis is first test of stlap",
         text: "Hello Worldthis is first test of stlap",
         flags: [new Flag("flag1")],
         collects: [],
@@ -83,7 +84,7 @@ describe("fromString", () => {
         collects: [],
       },
       {
-        source: "TESTTESTTEST\n//comment2",
+        source: "TESTTESTTEST\n//comment2\n@collect flag1",
         text: "TESTTESTTEST",
         flags: [],
         collects: [new Collect("flag1")],
@@ -145,5 +146,71 @@ describe("toText", () => {
 
     const expected = "Hello Worldthis is first test of stlap\n\nTESTTESTTEST";
     expect(output).toEqual<string>(expected);
+  });
+});
+
+describe("Flag", () => {
+  test("simple pattern", () => {
+    const src = "@flag flag_name";
+    const output = Flag.fromString(src);
+
+    expect(output).toEqual(new Flag("flag_name"));
+  });
+  test("pattern wtih half spaces", () => {
+    const src = "@flag   flag_name ";
+    const output = Flag.fromString(src);
+
+    expect(output).toEqual(new Flag("flag_name"));
+  });
+  test("simple pattern with large spaces", () => {
+    const src = "@flag　flag_name";
+    const output = Flag.fromString(src);
+
+    expect(output).toEqual(new Flag("flag_name"));
+  });
+  test("simple fail pattern", () => {
+    const src = "@flag 999flag_name";
+    const output = Flag.fromString(src);
+
+    expect(output).toBeInstanceOf(Error);
+  });
+  test("No Unicode pattern", () => {
+    const src = "@flag flag😀";
+    const output = Flag.fromString(src);
+
+    expect(output).toBeInstanceOf(Error);
+  });
+});
+
+describe("Collect", () => {
+  test("simple pattern", () => {
+    const src = "@collect collect_name";
+    const output = Collect.fromString(src);
+
+    expect(output).toEqual(new Collect("collect_name"));
+  });
+  test("pattern wtih half spaces", () => {
+    const src = "@collect   collect_name ";
+    const output = Collect.fromString(src);
+
+    expect(output).toEqual(new Collect("collect_name"));
+  });
+  test("simple pattern with large spaces", () => {
+    const src = "@collect　collect_name";
+    const output = Collect.fromString(src);
+
+    expect(output).toEqual(new Collect("collect_name"));
+  });
+  test("simple fail pattern", () => {
+    const src = "@collect 999collect_name";
+    const output = Collect.fromString(src);
+
+    expect(output).toBeInstanceOf(Error);
+  });
+  test("No Unicode pattern", () => {
+    const src = "@collect collect😀";
+    const output = Collect.fromString(src);
+
+    expect(output).toBeInstanceOf(Error);
   });
 });
