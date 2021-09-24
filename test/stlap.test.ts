@@ -67,4 +67,29 @@ describe("toText", () => {
       "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST";
     expect(output).toEqual<string>(expected);
   });
+
+  test("Comment Only", () => {
+    const source = "//comment";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+    const expected = "";
+
+    expect(output).toEqual<String>(expected);
+  });
+
+  test("Three paragraph with Comment only", () => {
+    const source =
+      "//comment\nHello World\nthis is first test of stlap\n\n\n\n//comment only\n\nTESTTESTTEST\n//comment2";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+
+    const expected = "Hello Worldthis is first test of stlap\n\nTESTTESTTEST";
+    expect(output).toEqual<string>(expected);
+  });
 });
