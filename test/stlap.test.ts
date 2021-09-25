@@ -147,6 +147,19 @@ describe("toText", () => {
     const expected = "Hello Worldthis is first test of stlap\n\nTESTTESTTEST";
     expect(output).toEqual<string>(expected);
   });
+
+  test("Three paragraph with 2 flags", () => {
+    const src =
+      "//comment\nHello World\n@flag flag1\n@flag sub_flag\nthis is first test of stlap\n\n\n\n@collect sub_flag\nHave a good day\n\nTESTTESTTEST\n//comment2\n@collect flag1";
+    const stlap = Stlap.fromString(src);
+    if (stlap instanceof Error) {
+      throw Error;
+    }
+    const output = stlap.toText();
+    const expected =
+      "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST";
+    expect(output).toEqual(expected);
+  });
 });
 
 describe("isValid", () => {
