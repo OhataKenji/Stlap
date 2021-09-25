@@ -1,4 +1,6 @@
 import { Stlap, Passage, Flag, Collect } from "../src/stlap";
+import fs from "fs";
+import path from "path";
 
 describe("fromString", () => {
   test("One paragraph", () => {
@@ -104,7 +106,7 @@ describe("toText", () => {
       throw Error();
     }
     const output = stlap.toText();
-    const expected = "Hello Worldthis is first test of stlapHave a good day";
+    const expected = "Hello Worldthis is first test of stlapHave a good day\n";
 
     expect(output).toEqual<String>(expected);
   });
@@ -119,7 +121,7 @@ describe("toText", () => {
     const output = stlap.toText();
 
     const expected =
-      "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST";
+      "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST\n";
     expect(output).toEqual<string>(expected);
   });
 
@@ -130,7 +132,7 @@ describe("toText", () => {
       throw Error();
     }
     const output = stlap.toText();
-    const expected = "";
+    const expected = "\n";
 
     expect(output).toEqual<String>(expected);
   });
@@ -144,7 +146,7 @@ describe("toText", () => {
     }
     const output = stlap.toText();
 
-    const expected = "Hello Worldthis is first test of stlap\n\nTESTTESTTEST";
+    const expected = "Hello Worldthis is first test of stlap\n\nTESTTESTTEST\n";
     expect(output).toEqual<string>(expected);
   });
 
@@ -157,7 +159,7 @@ describe("toText", () => {
     }
     const output = stlap.toText();
     const expected =
-      "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST";
+      "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST\n";
     expect(output).toEqual(expected);
   });
 
@@ -170,7 +172,27 @@ describe("toText", () => {
     }
     const output = s.toText();
     const expected =
-      "Hello World@flag fthis is first test of stlapHave a good day";
+      "Hello World@flag fthis is first test of stlapHave a good day\n";
+    expect(output).toEqual(expected);
+  });
+
+  test("3paragraphWithComment", () => {
+    const src = fs
+      .readFileSync(
+        path.join(__dirname, "example", "3paragraphWithComment.txt")
+      )
+      .toString();
+    const expected = fs
+      .readFileSync(
+        path.join(__dirname, "example", "3paragraphWithComment_toText.txt")
+      )
+      .toString();
+
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.toText();
     expect(output).toEqual(expected);
   });
 });

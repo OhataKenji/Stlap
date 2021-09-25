@@ -25,7 +25,7 @@ async function main() {
     return;
   }
 
-  console.log(stlap.toText());
+  process.stdout.write(stlap.toText());
 }
 
 main();
