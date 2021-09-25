@@ -122,10 +122,12 @@ export class Stlap {
 
   toText(): string {
     const key = "text";
-    return this.story
-      .map((p) => p[key])
-      .filter((s) => s != "")
-      .join("\n\n");
+    return (
+      this.story
+        .map((p) => p[key])
+        .filter((s) => s != "")
+        .join("\n\n") + "\n"
+    );
   }
 
   /**
