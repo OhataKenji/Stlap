@@ -59,7 +59,14 @@ export class Passage {
     const flags: Flag[] = [];
     const collects: Collect[] = [];
     for (const row of src.split("\n")) {
-      if (row.startsWith("//")) {
+      if (row.startsWith("\\")) {
+        //
+        // espace
+        //
+        if (row.startsWith("\\@")) {
+          textRows.push(row.slice(1));
+        }
+      } else if (row.startsWith("//")) {
         //
         // a comment
         //
