@@ -149,6 +149,63 @@ describe("toText", () => {
   });
 });
 
+describe("isValid", () => {
+  test("valid with no flag", () => {
+    const src =
+      "//comment\nHello World\nthis is first test of stlap\nHave a good day";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(true);
+  });
+
+  test("Valid three paragraph with flag and collect", () => {
+    const src =
+      "//comment\nHello World\n@flag flag1\nthis is first test of stlap\n\n\n\nHave a good day\n\nTESTTESTTEST\n//comment2\n@collect flag1";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(true);
+  });
+
+  test("Invalid three paragraph with flag not closed", () => {
+    const src =
+      "//comment\nHello World\n@flag flag1\nthis is first test of stlap\n\n\n\nHave a good day\n\nTESTTESTTEST\n//comment2";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(false);
+  });
+
+  test("Invalid three paragraph with collect first", () => {
+    const src =
+      "//comment\nHello World\n@collect flag1\nthis is first test of stlap\n\n\n\nHave a good day\n\nTESTTESTTEST\n//comment2";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(false);
+  });
+
+  test("Valid three paragraph with 2 flags", () => {
+    const src =
+      "//comment\nHello World\n@flag flag1\n@flag sub_flag\nthis is first test of stlap\n\n\n\n@collect sub_flag\nHave a good day\n\nTESTTESTTEST\n//comment2\n@collect flag1";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(true);
+  });
+});
+
 describe("Flag", () => {
   test("simple pattern", () => {
     const src = "@flag flag_name";

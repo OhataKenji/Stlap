@@ -120,4 +120,27 @@ export class Stlap {
       .filter((s) => s != "")
       .join("\n\n");
   }
+
+  /**
+   * @returns true if flag and collect match.
+   */
+  isValid(): boolean {
+    const remainFlags = new Set<string>();
+
+    for (const p of this.story) {
+      for (const f of p.flags) {
+        remainFlags.add(f.name);
+      }
+
+      for (const c of p.collects) {
+        if (!remainFlags.has(c.name)) {
+          // Not made flag behorehand
+          return false;
+        }
+        remainFlags.delete(c.name);
+      }
+    }
+
+    return remainFlags.size === 0;
+  }
 }
