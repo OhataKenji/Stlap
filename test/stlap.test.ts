@@ -181,12 +181,12 @@ describe("toText", () => {
       .readFileSync(
         path.join(__dirname, "example", "3paragraphWithComment.txt")
       )
-      .toString();
+      .toString("utf8");
     const expected = fs
       .readFileSync(
         path.join(__dirname, "example", "3paragraphWithComment_toText.txt")
       )
-      .toString();
+      .toString("utf8");
 
     const s = Stlap.fromString(src);
     if (s instanceof Error) {
