@@ -19,7 +19,7 @@ async function main() {
     return;
   }
 
-  const stlap = Stlap.fromString(b.toString());
+  const stlap = Stlap.fromString(b.toString("utf8"));
   if (stlap instanceof Error) {
     console.error(stlap.message);
     return;
