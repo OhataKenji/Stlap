@@ -1,0 +1,14 @@
+@flag toBeDuplicated
+samplesamplesample
+samplesamplesample
+
+samplesamplesample
+
+@flag toBeDuplicated
+samplesamplesample
+samplesamplesample
+
+
+
+@collect toBeDuplicated
+samplesamplesample

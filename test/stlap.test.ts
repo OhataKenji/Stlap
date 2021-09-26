@@ -252,6 +252,58 @@ describe("isValid", () => {
     const output = s.isValid();
     expect(output).toEqual(true);
   });
+
+  test("Duplicatedflag", () => {
+    const src = fs
+      .readFileSync(path.join(__dirname, "example", "Duplicatedflag.txt"))
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(false);
+  });
+
+  test("DuplicatedCollect", () => {
+    const src = fs
+      .readFileSync(path.join(__dirname, "example", "DuplicatedCollect.txt"))
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(false);
+  });
+
+  test("NotCareOrderInParagraph", () => {
+    const src = fs
+      .readFileSync(
+        path.join(__dirname, "example", "NotCareOrderInParagraph.txt")
+      )
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(true);
+  });
+
+  test("SameFlagTwiceWhichIsInvalid.txt", () => {
+    const src = fs
+      .readFileSync(
+        path.join(__dirname, "example", "SameFlagTwiceWhichIsInvalid.txt")
+      )
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(false);
+  });
 });
 
 describe("Flag", () => {
