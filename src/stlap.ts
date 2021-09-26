@@ -138,6 +138,10 @@ export class Stlap {
 
     for (const p of this.story) {
       for (const f of p.flags) {
+        if (remainFlags.has(f.name)) {
+          // already have same flag
+          return false;
+        }
         remainFlags.add(f.name);
       }
 
