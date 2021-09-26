@@ -135,14 +135,16 @@ export class Stlap {
    */
   isValid(): boolean {
     const remainFlags = new Set<string>();
+    const registeredFlags = new Set<string>();
 
     for (const p of this.story) {
       for (const f of p.flags) {
-        if (remainFlags.has(f.name)) {
+        if (remainFlags.has(f.name) || registeredFlags.has(f.name)) {
           // already have same flag
           return false;
         }
         remainFlags.add(f.name);
+        registeredFlags.add(f.name);
       }
 
       for (const c of p.collects) {
