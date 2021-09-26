@@ -58,7 +58,7 @@ export class Passage {
     const textRows: string[] = [];
     const flags: Flag[] = [];
     const collects: Collect[] = [];
-    for (const row of src.split("\n")) {
+    for (const row of src.split(/\r?\n/)) {
       if (row.startsWith("\\")) {
         //
         // espace
@@ -108,8 +108,10 @@ export class Stlap {
   }
 
   static fromString(source: string): Stlap | Error {
+    const sourceLF = source.replace("\r\n", "\n");
+
     const output: Passage[] = [];
-    for (const src of source.split(/\n\n*\n/)) {
+    for (const src of sourceLF.split(/\n\n*\n/)) {
       const passage = Passage.fromString(src);
       if (passage instanceof Error) {
         return passage;
