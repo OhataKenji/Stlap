@@ -108,10 +108,10 @@ export class Stlap {
   }
 
   static fromString(source: string): Stlap | Error {
-    const sourceLF = source.replace("\n", "\n");
-
+    console.log(source);
+    console.log(source.split(/\n\n*\n/));
     const output: Passage[] = [];
-    for (const src of sourceLF.split(/\n\n*\n/)) {
+    for (const src of source.split(/\n\n*\n/)) {
       const passage = Passage.fromString(src);
       if (passage instanceof Error) {
         return passage;
