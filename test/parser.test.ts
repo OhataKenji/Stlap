@@ -6,7 +6,29 @@ import {
   tokenizeCommand,
   tokenizeCommentLine,
   tokenizeSentenceLine,
+  Vertex,
+  Parser,
 } from "../src/parser";
+import fs from "fs";
+import path from "path";
+
+describe("Parser", () => {
+  test("No error parse", () => {
+    const fileNames = [
+      "Duplicatedflag.txt",
+      "3paragraphWithComment.txt",
+      "SameFlagTwiceWhichIsInvalid.txt",
+      "NotCareOrderInParagraph.txt",
+    ];
+    for (const file of fileNames) {
+      const src = fs
+        .readFileSync(path.join(__dirname, "example", file))
+        .toString();
+      const v = Parser.parse(src);
+      expect(v).toBeInstanceOf(Vertex);
+    }
+  });
+});
 
 describe("tokenizeNewLine", () => {
   test("empty", () => {

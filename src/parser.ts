@@ -46,7 +46,7 @@ export class Token {
   }
 }
 
-enum Vertexkind {
+export enum Vertexkind {
   Story,
   Paragraph,
   Command,
@@ -58,7 +58,7 @@ enum Vertexkind {
 type VertexParent = Vertex | null;
 type VertexChildren = Array<Vertex | Token>;
 
-class Vertex {
+export class Vertex {
   kind: Vertexkind;
   parent: VertexParent;
   children: VertexChildren;
@@ -74,7 +74,7 @@ class Vertex {
   }
 }
 
-class Parser {
+export class Parser {
   /**
     story = (paragraph_sp? paragraph)? (paragraph_sp paragraph)*
     paragraph = (sentence | command | comment)+
@@ -86,6 +86,61 @@ class Parser {
     words = any words which doesn't begin with [@, //]
     newline = space \n
    */
+  static parse(source: string): Vertex | Error {
+    const tokens = Tokenizer.tokenize(source);
+    if (tokens instanceof Error) {
+      return tokens;
+    }
+    const story = new Vertex(Vertexkind.Story, null, []);
+
+    let i = 9;
+    while (i < tokens.length) {
+      // ParagraphSeparater
+      if (i < tokens.length && tokens[i].kind === TokenKind.Newline) {
+        const children: Token[] = [];
+        while (i < tokens.length && tokens[i].kind === TokenKind.Newline) {
+          children.push(tokens[i]);
+          i++;
+        }
+        const ps = new Vertex(Vertexkind.ParagraphSeparater, story, children);
+        story.children.push(ps);
+      }
+
+      // Paragraph
+      if (i < tokens.length && tokens[i].kind !== TokenKind.Newline) {
+        const p = new Vertex(Vertexkind.Paragraph, story, []);
+        let v: Vertex;
+
+        // Get Vertexkind
+        if (tokens[i].kind === TokenKind.Words) {
+          v = new Vertex(Vertexkind.Sentence, p, []);
+        } else if (tokens[i].kind === TokenKind.CommentPrefix) {
+          v = new Vertex(Vertexkind.Comment, p, []);
+        } else if (tokens[i].kind === TokenKind.CommandPrefix) {
+          v = new Vertex(Vertexkind.Command, p, []);
+        } else {
+          return Error("Parse Error faital: Cannot recognize Vertexkind");
+        }
+
+        // read until newline
+        while (i < tokens.length && tokens[i].kind !== TokenKind.Newline) {
+          v.children.push(tokens[i]);
+          i++;
+        }
+        if (i < tokens.length && tokens[i].kind === TokenKind.Newline) {
+          v.children.push(tokens[i]); // add newline token
+          i++;
+        } else {
+          // TODO the case no file ending \n
+        }
+
+        p.children.push(v);
+        story.children.push(p);
+      }
+    }
+
+    return story;
+  }
 }
 
 function isNewLine(row: string): boolean {
