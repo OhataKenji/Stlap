@@ -335,10 +335,8 @@ export class Tokenizer {
       tokens.push(...t);
     }
 
-    // the case when source file doesn't have ending \n
-    if (lines[lines.length - 1] !== "") {
-      return tokens.slice(0, tokens.length - 1);
-    }
+    // TODO Currently, it doesn't care if the source file have ending \n or not.
+    // Care it.
     return tokens;
   }
 }
