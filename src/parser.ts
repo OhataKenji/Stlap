@@ -192,8 +192,24 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
       );
       break;
     case "flag":
+      tokens.push(
+        new Token(
+          TokenKind.Flag,
+          new Position(lineNumber, 1),
+          new Position(lineNumber, 1),
+          new Position(lineNumber, "flag".length)
+        )
+      );
       break;
     case "collect":
+      tokens.push(
+        new Token(
+          TokenKind.Collect,
+          new Position(lineNumber, 1),
+          new Position(lineNumber, 1),
+          new Position(lineNumber, "collect".length)
+        )
+      );
       break;
     default:
       tokens.push(
@@ -205,7 +221,62 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
           "Unexpected Command Name:コマンド名(flagまたはcollect)ではありません"
         )
       );
+      break;
   }
+  // space
+  const space = match[2];
+  tokens.push(
+    new Token(
+      TokenKind.Space,
+      new Position(lineNumber, commandName.length + 1),
+      new Position(lineNumber, commandName.length + space.length),
+      new Position(lineNumber, commandName.length + space.length)
+    )
+  );
+  // name
+  const name = match[3];
+  tokens.push(
+    new Token(
+      TokenKind.Name,
+      new Position(lineNumber, commandName.length + space.length + 1),
+      new Position(lineNumber, commandName.length + space.length + 1),
+      new Position(lineNumber, commandName.length + space.length + name.length)
+    )
+  );
+  // skip part
+  const skip = match[4];
+  if (skip !== "") {
+    tokens.push(
+      new Token(
+        TokenKind.SkippedToken,
+        new Position(
+          lineNumber,
+          commandName.length + space.length + name.length + 1
+        ),
+        new Position(
+          lineNumber,
+          commandName.length + space.length + name.length + 1
+        ),
+        new Position(
+          lineNumber,
+          commandName.length + space.length + name.length + skip.length
+        ),
+        "Unexpected: 予期しない文字列です"
+      )
+    );
+  }
+  // newline
+  tokens.push(
+    new Token(
+      TokenKind.Newline,
+      new Position(
+        lineNumber,
+        commandName.length + space.length + name.length + skip.length + 1
+      ),
+      new Position(lineNumber, line.length),
+      new Position(lineNumber, line.length)
+    )
+  );
 
   return tokens;
 };

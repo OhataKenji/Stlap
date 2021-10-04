@@ -229,3 +229,106 @@ describe("tokenizeSentenceLine", () => {
     expect(o).toEqual(expected);
   });
 });
+
+describe("tokenizeCommand", () => {
+  test("simple flag", () => {
+    const input = "@flag flagname";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.Flag,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, "flag".length)
+      ),
+      new Token(
+        TokenKind.Space,
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 1)
+      ),
+      new Token(
+        TokenKind.Name,
+        new Position(i, "flag".length + 2),
+        new Position(i, "flag".length + 2),
+        new Position(i, "flag".length + 1 + "flagname".length)
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+  test("simple collect", () => {
+    const input = "@collect flagname";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.Collect,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, "collect".length)
+      ),
+      new Token(
+        TokenKind.Space,
+        new Position(i, "collect".length + 1),
+        new Position(i, "collect".length + 1),
+        new Position(i, "collect".length + 1)
+      ),
+      new Token(
+        TokenKind.Name,
+        new Position(i, "collect".length + 2),
+        new Position(i, "collect".length + 2),
+        new Position(i, "collect".length + 1 + "flagname".length)
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+  test("empty", () => {
+    const input = "";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("comment-like", () => {
+    const input = "// comment like";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("ordinary sentence", () => {
+    const input = "just like a sentence";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("", () => {
+    const input = "just like a sentence";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+});
