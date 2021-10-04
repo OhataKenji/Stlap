@@ -269,6 +269,39 @@ describe("tokenizeCommand", () => {
     ];
     expect(o).toEqual(expected);
   });
+  test("capture flag", () => {
+    const input = "@flag flagname";
+    const i = 0;
+    const ts = tokenizeCommand(input, i);
+    if (ts instanceof Error) {
+      throw ts;
+    }
+    const t = ts.filter((t) => t.kind == TokenKind.Flag)[0];
+    const expected = input.slice(t.fullStart.charcter, t.end.charcter + 1);
+    expect(expected).toEqual("flag");
+  });
+  test("capture collect", () => {
+    const input = "@collect flagname";
+    const i = 0;
+    const ts = tokenizeCommand(input, i);
+    if (ts instanceof Error) {
+      throw ts;
+    }
+    const t = ts.filter((t) => t.kind == TokenKind.Collect)[0];
+    const expected = input.slice(t.fullStart.charcter, t.end.charcter + 1);
+    expect(expected).toEqual("collect");
+  });
+  test("capture name", () => {
+    const input = "@flag flagname";
+    const i = 0;
+    const ts = tokenizeCommand(input, i);
+    if (ts instanceof Error) {
+      throw ts;
+    }
+    const t = ts.filter((t) => t.kind == TokenKind.Name)[0];
+    const expected = input.slice(t.fullStart.charcter, t.end.charcter + 1);
+    expect(expected).toEqual("flagname");
+  });
   test("simple collect", () => {
     const input = "@collect flagname";
     const i = 0;
