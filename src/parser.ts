@@ -8,6 +8,15 @@ export class Position {
   }
 }
 
+export class Range {
+  start: Position;
+  end: Position;
+  constructor(start: Position, end: Position) {
+    this.start = start;
+    this.end = end;
+  }
+}
+
 export enum TokenKind {
   Newline,
   Space,
@@ -42,6 +51,16 @@ export class Token {
     this.end = end;
     if (message !== null) {
       this.message = message;
+    }
+  }
+
+  getTextRange(): Range | null {
+    switch (this.kind) {
+      case TokenKind.Words:
+        return new Range(this.start, this.end);
+        break;
+      default:
+        return null;
     }
   }
 }

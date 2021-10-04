@@ -1,161 +1,100 @@
-export class Flag {
-  readonly name: string;
-  private type = "flag" as const;
-  constructor(name: string) {
-    this.name = name;
-  }
-  static fromString(source: string): Flag | Error {
-    const flagPattern = /^@flag[^\S\r\n]+([A-Za-z_]\w*)[^\S\r\n]*$/;
-    const match = flagPattern.exec(source);
-    if (match !== null) {
-      const flagName = match[1];
-      return new Flag(flagName);
-    } else {
-      return Error(`Parse Error: ${source}`);
-    }
-  }
+import { Range, Parser, Token, Vertex, Vertexkind } from "./parser";
+
+export interface Diagnostic {
+  range: Range;
+  severity?: DiagnosticSeverity;
+  message: string;
 }
 
-export class Collect {
-  readonly name: string;
-  private type = "collect" as const;
-  constructor(name: string) {
-    this.name = name;
-  }
-  static fromString(source: string): Collect | Error {
-    const collectPattern = /^@collect[^\S\r\n]+([A-Za-z_]\w*)[^\S\r\n]*$/;
-    const match = collectPattern.exec(source);
-    if (match !== null) {
-      const collectName = match[1];
-      return new Collect(collectName);
-    } else {
-      return Error(`Parse Error: ${source}`);
-    }
-  }
+export namespace DiagnosticSeverity {
+  export const Error: 1 = 1;
+  export const Warning: 2 = 2;
+  export const Information: 3 = 3;
+  export const Hint: 4 = 4;
 }
 
-export class Passage {
-  source: string;
-  text: string;
-  readonly flags: Flag[];
-  readonly collects: Collect[];
-
-  constructor(
-    source: string,
-    text: string,
-    flags: Flag[],
-    collects: Collect[]
-  ) {
-    this.source = source;
-    this.text = text;
-    this.flags = flags;
-    this.collects = collects;
-  }
-
-  static fromString(source: string): Passage | Error {
-    const src = source;
-
-    const textRows: string[] = [];
-    const flags: Flag[] = [];
-    const collects: Collect[] = [];
-    for (const row of src.split("\n")) {
-      if (row.startsWith("\\")) {
-        //
-        // espace
-        //
-        if (row.startsWith("\\@")) {
-          textRows.push(row.slice(1));
-        }
-      } else if (row.startsWith("//")) {
-        //
-        // a comment
-        //
-      } else if (row.startsWith("@")) {
-        //
-        // Flag and Collect
-        //
-        if (row.startsWith("@flag")) {
-          const f = Flag.fromString(row);
-          if (f instanceof Error) {
-            return f;
-          }
-          flags.push(f);
-        } else if (row.startsWith("@collect")) {
-          const c = Collect.fromString(row);
-          if (c instanceof Error) {
-            return c;
-          }
-          collects.push(c);
-        } else {
-          return Error(`Parse Error Invalid @ use: ${row}`);
-        }
-      } else {
-        //
-        // text part
-        //
-        textRows.push(row.slice());
-      }
-    }
-
-    return new Passage(src, textRows.join(""), flags, collects);
-  }
-}
+export type DiagnosticSeverity = 1 | 2 | 3 | 4;
 
 export class Stlap {
-  story: Passage[];
-  constructor(story: Passage[]) {
+  story: Vertex;
+  source: string;
+  numberOfCharUntilLine: number[];
+  diagnostics: Diagnostic[];
+
+  constructor(story: Vertex, source: string, n: number[]) {
     this.story = story;
+    this.source = source;
+    this.numberOfCharUntilLine = n;
+    this.diagnostics = this.validate();
   }
 
   static fromString(source: string): Stlap | Error {
-    const output: Passage[] = [];
-    for (const src of source.split(/\n\n*\n/)) {
-      const passage = Passage.fromString(src);
-      if (passage instanceof Error) {
-        return passage;
-      }
-
-      output.push(passage);
+    const s = Parser.parse(source);
+    if (s instanceof Error) {
+      return s;
     }
-    return new Stlap(output);
+
+    const charEachLine = source.split("\n").map((s) => s.length + 1);
+    const numberOfCharUntilLine = Array<number>(charEachLine.length + 1).fill(
+      0
+    );
+    for (let i = 0; i < charEachLine.length; i++) {
+      numberOfCharUntilLine[i + 1] +=
+        charEachLine[i] + numberOfCharUntilLine[i];
+    }
+
+    return new Stlap(s, source, numberOfCharUntilLine);
   }
 
   toText(): string {
-    const key = "text";
-    return (
-      this.story
-        .map((p) => p[key])
-        .filter((s) => s != "")
-        .join("\n\n") + "\n"
-    );
+    return this._toText(this.story);
+  }
+
+  _toText(v: Vertex, paragraphSeparater = "\n\n"): string {
+    switch (v.kind) {
+      case Vertexkind.Sentence:
+        return v.children
+          .filter<Token>((c): c is Token => c instanceof Token) // TODO Sentence can have Vertex in the future
+          .map((c) => c.getTextRange())
+          .filter<Range>((r): r is Range => r !== null)
+          .map((r) => {
+            const s = this.numberOfCharUntilLine[r.start.line];
+            const e = this.numberOfCharUntilLine[r.end.line];
+            return this.source.slice(s, e + 1);
+          })
+          .join("");
+      case Vertexkind.Paragraph:
+        return v.children
+          .filter<Vertex>((v): v is Vertex => v instanceof Vertex) // TODO Paragraph can have Token in the future
+          .map((c) => this._toText(c, paragraphSeparater))
+          .filter((r) => r !== "")
+          .join("");
+        break;
+      case Vertexkind.Story:
+        return v.children
+          .filter<Vertex>((v): v is Vertex => v instanceof Vertex) // TODO Story can have Token in the future
+          .map((c) => this._toText(c, paragraphSeparater))
+          .filter((r) => r !== "")
+          .join("");
+        break;
+
+      default:
+        return "";
+    }
+  }
+
+  validate(): Diagnostic[] {
+    return [];
   }
 
   /**
    * @returns true if flag and collect match.
    */
   isValid(): boolean {
-    const remainFlags = new Set<string>();
-    const registeredFlags = new Set<string>();
-
-    for (const p of this.story) {
-      for (const f of p.flags) {
-        if (remainFlags.has(f.name) || registeredFlags.has(f.name)) {
-          // already have same flag
-          return false;
-        }
-        remainFlags.add(f.name);
-        registeredFlags.add(f.name);
-      }
-
-      for (const c of p.collects) {
-        if (!remainFlags.has(c.name)) {
-          // Not made flag behorehand
-          return false;
-        }
-        remainFlags.delete(c.name);
-      }
-    }
-
-    return remainFlags.size === 0;
+    return (
+      0 ===
+      this.diagnostics.filter((d) => d.severity === DiagnosticSeverity.Error)
+        .length
+    );
   }
 }
