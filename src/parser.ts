@@ -211,7 +211,7 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
 };
 
 export const tokenizeSentenceLine: TokenizeLine = function (line, lineNumber) {
-  const match = line.match(/(.*?)([^\S\r\n]*)/);
+  const match = line.match(/^(.*?)([^\S\r\n]*)$/);
   if (
     match === null ||
     match[1] === null ||

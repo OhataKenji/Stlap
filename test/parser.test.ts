@@ -162,3 +162,70 @@ describe("tokenizeCommentLine", () => {
     expect(o).toEqual(expected);
   });
 });
+
+describe("tokenizeSentenceLine", () => {
+  test("empty", () => {
+    const input = "";
+    const i = 0;
+    const o = tokenizeSentenceLine(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("white spaces", () => {
+    const input = "    ";
+    const i = 0;
+    const o = tokenizeSentenceLine(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("command", () => {
+    const input = "@command name";
+    const i = 0;
+    const o = tokenizeSentenceLine(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("comment", () => {
+    const input = "// comment line";
+    const i = 0;
+    const o = tokenizeSentenceLine(input, i);
+    expect(o).toBeInstanceOf(Error);
+  });
+  test("Japanese simple", () => {
+    const input = "サンプル文章";
+    const i = 0;
+    const o = tokenizeSentenceLine(input, i);
+    const expected = [
+      new Token(
+        TokenKind.Words,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, input.length - 1)
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+  test("simple with ending single space", () => {
+    const input = "THIS IS A SAMPLE SENTENCE FOLLOWED BY ONE SPACE ";
+    const i = 0;
+    const o = tokenizeSentenceLine(input, i);
+    const expected = [
+      new Token(
+        TokenKind.Words,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, input.length - 1 - " ".length)
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length - " ".length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+});
