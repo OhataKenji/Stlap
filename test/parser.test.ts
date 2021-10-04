@@ -307,6 +307,135 @@ describe("tokenizeCommand", () => {
     ];
     expect(o).toEqual(expected);
   });
+  test("broken collect", () => {
+    const input = "@ collect flagname";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.MissingToken,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0),
+        "Expected Command Name:コマンド名(flagまたはcollect)がありません"
+      ),
+      new Token(
+        TokenKind.Space,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, 1)
+      ),
+      new Token(
+        TokenKind.Name,
+        new Position(i, 2),
+        new Position(i, 2),
+        new Position(i, 2 + "collect".length - 1)
+      ),
+      new Token(
+        TokenKind.SkippedToken,
+        new Position(i, "@ collect".length),
+        new Position(i, "@ collect".length),
+        new Position(i, input.length - 1),
+        "Unexpected: 予期しない文字列です"
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+  test("simple flag with some sapaces", () => {
+    const input = "@flag  flagname  　　";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.Flag,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, "flag".length)
+      ),
+      new Token(
+        TokenKind.Space,
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 2),
+        new Position(i, "flag".length + 2)
+      ),
+      new Token(
+        TokenKind.Name,
+        new Position(i, "flag".length + 3),
+        new Position(i, "flag".length + 3),
+        new Position(i, "flag".length + 2 + "flagname".length)
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length - "  　　".length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+  test("collect with skipped part", () => {
+    const input = "@collect flagname this is unused part ";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.Collect,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, "collect".length)
+      ),
+      new Token(
+        TokenKind.Space,
+        new Position(i, "collect".length + 1),
+        new Position(i, "collect".length + 1),
+        new Position(i, "collect".length + 1)
+      ),
+      new Token(
+        TokenKind.Name,
+        new Position(i, "collect".length + 2),
+        new Position(i, "collect".length + 2),
+        new Position(i, "collect".length + 1 + "flagname".length)
+      ),
+      new Token(
+        TokenKind.SkippedToken,
+        new Position(i, "collect".length + 1 + "flagname".length + 1),
+        new Position(i, "collect".length + 1 + "flagname".length + 1),
+        new Position(i, input.length - 2),
+        "Unexpected: 予期しない文字列です"
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length - 1),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
   test("empty", () => {
     const input = "";
     const i = 0;
