@@ -30,6 +30,19 @@ describe("toText", () => {
     expect(output).toEqual<string>(expected);
   });
 
+  test("empty", () => {
+    for (const source of ["", "\n"]) {
+      const stlap = Stlap.fromString(source);
+      if (stlap instanceof Error) {
+        throw Error();
+      }
+      const output = stlap.toText();
+      const expected = "\n";
+
+      expect(output).toEqual<String>(expected);
+    }
+  });
+
   test("Comment Only", () => {
     const source = "//comment";
     const stlap = Stlap.fromString(source);

@@ -73,6 +73,7 @@ export enum Vertexkind {
   Sentence,
   ParagraphSeparater,
   End,
+  Start,
 }
 
 type VertexParent = Vertex | null;
@@ -405,7 +406,8 @@ export class Tokenizer {
     const lines = src.split("\n");
 
     // because content is before ending \n
-    if (lines[lines.length - 1] === "") {
+    // empty input "" is the exception
+    if (lines.length > 1 && lines[lines.length - 1] === "") {
       lines.pop();
     }
 
