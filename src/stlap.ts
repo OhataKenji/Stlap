@@ -116,14 +116,29 @@ export class Stlap {
 
   validate(): Diagnostic[] {
     const register = new Set<string>();
-    const currentFlags = new Set<string>();
-    return this._validate(this.story, register, currentFlags);
+    const remainingFlag = new Map<string, Token>();
+    const ds = this._validate(this.story, register, remainingFlag);
+    for (let [arg, t] of remainingFlag) {
+      ds.push({
+        range: new Range(t.fullStart, t.end),
+        message:
+          "Flag " +
+          arg +
+          " is not collected フラグ " +
+          arg +
+          " が回収されていません\n@collect " +
+          arg +
+          "\nをしてください",
+        severity: DiagnosticSeverity.Error,
+      });
+    }
+    return ds;
   }
 
   _validate(
     v: Vertex | Token,
     register: Set<string>,
-    currentFlags: Set<string>
+    remainingFlag: Map<string, Token>
   ): Diagnostic[] {
     if (v instanceof Token) {
       // TODO define another function to simplyfy this part?
@@ -164,15 +179,15 @@ export class Stlap {
           ];
         } else {
           register.add(arg);
-          currentFlags.add(arg);
+          remainingFlag.set(arg, v);
         }
       } else if (v.kind === TokenKind.CollectArg) {
         const s = this.numberOfCharUntilLine[v.start.line] + v.start.charcter;
         const e = this.numberOfCharUntilLine[v.end.line] + v.end.charcter;
         const arg = this.source.slice(s, e + 1);
 
-        if (currentFlags.has(arg)) {
-          currentFlags.delete(arg);
+        if (remainingFlag.has(arg)) {
+          remainingFlag.delete(arg);
         } else {
           return [
             {
@@ -193,7 +208,7 @@ export class Stlap {
       return [];
     } else {
       return v.children
-        .map((c) => this._validate(c, register, currentFlags))
+        .map((c) => this._validate(c, register, remainingFlag))
         .flat();
     }
   }
