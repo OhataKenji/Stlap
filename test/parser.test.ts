@@ -72,7 +72,6 @@ describe("Parser", () => {
     ];
     p.children.push(...s);
     expected.children.push(p);
-    expected.children.push(new Vertex(Vertexkind.End, expected, []));
     expect(v).toEqual(expected);
   });
 });

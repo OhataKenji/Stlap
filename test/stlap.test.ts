@@ -100,6 +100,32 @@ describe("toText", () => {
     const output = s.toText();
     expect(output).toEqual(expected);
   });
+
+  test("One paragraph with proceeding newlines", () => {
+    const source =
+      "\n\n\n\n//comment\nHello World\nthis is first test of stlap\nHave a good day";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+    const expected = "Hello Worldthis is first test of stlapHave a good day\n";
+
+    expect(output).toEqual<String>(expected);
+  });
+
+  test("One paragraph end with newlines", () => {
+    const source =
+      "//comment\nHello World\nthis is first test of stlap\nHave a good day\n\n\n";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+    const expected = "Hello Worldthis is first test of stlapHave a good day\n";
+
+    expect(output).toEqual<String>(expected);
+  });
 });
 
 describe("isValid", () => {

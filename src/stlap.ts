@@ -93,13 +93,21 @@ export class Stlap {
           }
         }
 
+        // 先頭は""，末尾は"\n"
+        if (textAndSeps[0] instanceof Vertex) {
+          textAndSeps[0] = "";
+        }
+        if (textAndSeps[textAndSeps.length - 1] instanceof Vertex) {
+          textAndSeps[textAndSeps.length - 1] = "\n";
+        } else {
+          textAndSeps.push("\n");
+        }
+
         return textAndSeps
           .map((v) =>
             v instanceof Vertex ? this._toText(v, paragraphSeparater) : v
           )
           .join("");
-      } else if (v.kind === Vertexkind.End) {
-        return "\n"; // output should end with \n
       } else {
         return "";
       }

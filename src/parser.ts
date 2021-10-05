@@ -72,8 +72,6 @@ export enum Vertexkind {
   Comment,
   Sentence,
   ParagraphSeparater,
-  End,
-  Start,
 }
 
 type VertexParent = Vertex | null;
@@ -160,16 +158,6 @@ export class Parser {
         }
         story.children.push(p);
       }
-    }
-
-    // add End Vertex
-    if (
-      story.children[story.children.length - 1].kind ===
-      Vertexkind.ParagraphSeparater
-    ) {
-      story.children[story.children.length - 1].kind = Vertexkind.End;
-    } else {
-      story.children.push(new Vertex(Vertexkind.End, story, []));
     }
 
     return story;
