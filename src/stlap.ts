@@ -1,4 +1,4 @@
-import { Range, Parser, Token, Vertex, Vertexkind } from "./parser";
+import { Range, Parser, Token, Vertex, Vertexkind, TokenKind } from "./parser";
 
 export interface Diagnostic {
   range: Range;
@@ -50,36 +50,35 @@ export class Stlap {
     return this._toText(this.story);
   }
 
-  _toText(v: Vertex, paragraphSeparater = "\n\n"): string {
-    switch (v.kind) {
-      case Vertexkind.Sentence:
+  _toText(v: Vertex | Token, paragraphSeparater = "\n\n"): string {
+      if(v.kind === TokenKind.Words){
+          const r = v.getTextRange()
+          if(r === null){
+              return "" // TODO better error handling
+          }
+          const s = this.numberOfCharUntilLine[r.start.line] +
+              r.start.charcter
+          const e = this.numberOfCharUntilLine[r.end.line]+
+              r.end.charcter
+          return this.source.slice(s,e+1)
+      }
+      if(v.kind === Vertexkind.Sentence){
         return v.children
-          .filter<Token>((c): c is Token => c instanceof Token) // TODO Sentence can have Vertex in the future
-          .map((c) => c.getTextRange())
-          .filter<Range>((r): r is Range => r !== null)
-          .map((r) => {
-            const s = this.numberOfCharUntilLine[r.start.line];
-            const e = this.numberOfCharUntilLine[r.end.line];
-            return this.source.slice(s, e + 1);
-          })
-          .join("");
-      case Vertexkind.Paragraph:
-        return v.children
-          .filter<Vertex>((v): v is Vertex => v instanceof Vertex) // TODO Paragraph can have Token in the future
           .map((c) => this._toText(c, paragraphSeparater))
-          .filter((r) => r !== "")
           .join("");
-        break;
-      case Vertexkind.Story:
+      } else if(v.kind === Vertexkind.Paragraph){
         return v.children
-          .filter<Vertex>((v): v is Vertex => v instanceof Vertex) // TODO Story can have Token in the future
           .map((c) => this._toText(c, paragraphSeparater))
-          .filter((r) => r !== "")
           .join("");
-        break;
-
-      default:
+      } else if(v.kind === Vertexkind.ParagraphSeparater){
+          return paragraphSeparater
+      } else if(v.kind ===  Vertexkind.Story){
+        return v.children
+          .map((c) => this._toText(c, paragraphSeparater))
+          .join("");
+      }else{
         return "";
+      }
     }
   }
 
