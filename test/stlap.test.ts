@@ -208,18 +208,16 @@ describe("isValid", () => {
     expect(output).toEqual(false);
   });
 
-  test("NotCareOrderInParagraph", () => {
+  test("CareOrderInParagraph", () => {
     const src = fs
-      .readFileSync(
-        path.join(__dirname, "example", "NotCareOrderInParagraph.txt")
-      )
+      .readFileSync(path.join(__dirname, "example", "CareOrderInParagraph.txt"))
       .toString();
     const s = Stlap.fromString(src);
     if (s instanceof Error) {
       throw Error;
     }
     const output = s.isValid();
-    expect(output).toEqual(true);
+    expect(output).toEqual(false);
   });
 
   test("SameFlagTwiceWhichIsInvalid.txt", () => {
@@ -227,6 +225,18 @@ describe("isValid", () => {
       .readFileSync(
         path.join(__dirname, "example", "SameFlagTwiceWhichIsInvalid.txt")
       )
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.isValid();
+    expect(output).toEqual(false);
+  });
+
+  test("brokenFlagCommand.txt", () => {
+    const src = fs
+      .readFileSync(path.join(__dirname, "example", "brokenFlagCommand.txt"))
       .toString();
     const s = Stlap.fromString(src);
     if (s instanceof Error) {

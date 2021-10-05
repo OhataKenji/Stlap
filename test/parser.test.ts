@@ -20,7 +20,7 @@ describe("Parser", () => {
       "Duplicatedflag.txt",
       "3paragraphWithComment.txt",
       "SameFlagTwiceWhichIsInvalid.txt",
-      "NotCareOrderInParagraph.txt",
+      "CareOrderInParagraph.txt",
     ];
     for (const file of fileNames) {
       const src = fs
@@ -323,7 +323,7 @@ describe("tokenizeCommand", () => {
         new Position(i, "flag".length + 1)
       ),
       new Token(
-        TokenKind.Name,
+        TokenKind.FlagArg,
         new Position(i, "flag".length + 2),
         new Position(i, "flag".length + 2),
         new Position(i, "flag".length + 1 + "flagname".length)
@@ -366,7 +366,7 @@ describe("tokenizeCommand", () => {
     if (ts instanceof Error) {
       throw ts;
     }
-    const t = ts.filter((t) => t.kind == TokenKind.Name)[0];
+    const t = ts.filter((t) => t.kind == TokenKind.FlagArg)[0];
     const expected = input.slice(t.fullStart.charcter, t.end.charcter + 1);
     expect(expected).toEqual("flagname");
   });
@@ -394,7 +394,7 @@ describe("tokenizeCommand", () => {
         new Position(i, "collect".length + 1)
       ),
       new Token(
-        TokenKind.Name,
+        TokenKind.CollectArg,
         new Position(i, "collect".length + 2),
         new Position(i, "collect".length + 2),
         new Position(i, "collect".length + 1 + "flagname".length)
@@ -433,10 +433,11 @@ describe("tokenizeCommand", () => {
         new Position(i, 1)
       ),
       new Token(
-        TokenKind.Name,
+        TokenKind.SkippedToken,
         new Position(i, 2),
         new Position(i, 2),
-        new Position(i, 2 + "collect".length - 1)
+        new Position(i, 2 + "collect".length - 1),
+        "Unexpected Token: トークンを判別できませんでした"
       ),
       new Token(
         TokenKind.SkippedToken,
@@ -478,7 +479,7 @@ describe("tokenizeCommand", () => {
         new Position(i, "flag".length + 2)
       ),
       new Token(
-        TokenKind.Name,
+        TokenKind.FlagArg,
         new Position(i, "flag".length + 3),
         new Position(i, "flag".length + 3),
         new Position(i, "flag".length + 2 + "flagname".length)
@@ -516,7 +517,7 @@ describe("tokenizeCommand", () => {
         new Position(i, "collect".length + 1)
       ),
       new Token(
-        TokenKind.Name,
+        TokenKind.CollectArg,
         new Position(i, "collect".length + 2),
         new Position(i, "collect".length + 2),
         new Position(i, "collect".length + 1 + "flagname".length)

@@ -23,8 +23,9 @@ export enum TokenKind {
   CommandPrefix,
   CommentBody,
   Flag,
+  FlagArg,
   Collect,
-  Name,
+  CollectArg,
   Words,
   CommentPrefix,
   MissingToken,
@@ -311,14 +312,32 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
   );
   // name
   const name = match[3];
-  tokens.push(
-    new Token(
-      TokenKind.Name,
-      new Position(lineNumber, commandName.length + space.length + 1),
-      new Position(lineNumber, commandName.length + space.length + 1),
-      new Position(lineNumber, commandName.length + space.length + name.length)
-    )
-  );
+  if (commandName === "flag" || commandName === "collect") {
+    tokens.push(
+      new Token(
+        commandName === "flag" ? TokenKind.FlagArg : TokenKind.CollectArg,
+        new Position(lineNumber, commandName.length + space.length + 1),
+        new Position(lineNumber, commandName.length + space.length + 1),
+        new Position(
+          lineNumber,
+          commandName.length + space.length + name.length
+        )
+      )
+    );
+  } else {
+    tokens.push(
+      new Token(
+        TokenKind.SkippedToken,
+        new Position(lineNumber, commandName.length + space.length + 1),
+        new Position(lineNumber, commandName.length + space.length + 1),
+        new Position(
+          lineNumber,
+          commandName.length + space.length + name.length
+        ),
+        "Unexpected Token: トークンを判別できませんでした"
+      )
+    );
+  }
   // skip part
   const skip = match[4];
   if (skip !== "") {

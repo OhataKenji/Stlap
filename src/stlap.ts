@@ -115,7 +115,87 @@ export class Stlap {
   }
 
   validate(): Diagnostic[] {
-    return [];
+    const register = new Set<string>();
+    const currentFlags = new Set<string>();
+    return this._validate(this.story, register, currentFlags);
+  }
+
+  _validate(
+    v: Vertex | Token,
+    register: Set<string>,
+    currentFlags: Set<string>
+  ): Diagnostic[] {
+    if (v instanceof Token) {
+      // TODO define another function to simplyfy this part?
+      // Syntax and flag Errors
+      if (v.kind === TokenKind.MissingToken) {
+        return [
+          {
+            range: new Range(v.fullStart, v.end),
+            message: v.message || "",
+            severity: DiagnosticSeverity.Error,
+          },
+        ];
+      } else if (v.kind === TokenKind.SkippedToken) {
+        return [
+          {
+            range: new Range(v.fullStart, v.end),
+            message: v.message || "",
+            severity: DiagnosticSeverity.Error,
+          },
+        ];
+      } else if (v.kind === TokenKind.FlagArg) {
+        const s = this.numberOfCharUntilLine[v.start.line] + v.start.charcter;
+        const e = this.numberOfCharUntilLine[v.end.line] + v.end.charcter;
+        const arg = this.source.slice(s, e + 1);
+
+        if (register.has(arg)) {
+          return [
+            {
+              range: new Range(v.fullStart, v.end),
+              message:
+                arg +
+                " is already used" +
+                " " +
+                arg +
+                " はすでに使用されています",
+              severity: DiagnosticSeverity.Error,
+            },
+          ];
+        } else {
+          register.add(arg);
+          currentFlags.add(arg);
+        }
+      } else if (v.kind === TokenKind.CollectArg) {
+        const s = this.numberOfCharUntilLine[v.start.line] + v.start.charcter;
+        const e = this.numberOfCharUntilLine[v.end.line] + v.end.charcter;
+        const arg = this.source.slice(s, e + 1);
+
+        if (currentFlags.has(arg)) {
+          currentFlags.delete(arg);
+        } else {
+          return [
+            {
+              range: new Range(v.fullStart, v.end),
+              message:
+                arg +
+                " is not flagged" +
+                " " +
+                arg +
+                " はフラグがありません\n@flag " +
+                arg +
+                "\nをしてください",
+              severity: DiagnosticSeverity.Error,
+            },
+          ];
+        }
+      }
+      return [];
+    } else {
+      return v.children
+        .map((c) => this._validate(c, register, currentFlags))
+        .flat();
+    }
   }
 
   /**
