@@ -2,21 +2,6 @@ import { Stlap } from "../src/stlap";
 import fs from "fs";
 import path from "path";
 
-describe("Stlap", () => {
-  test("One paragraph", () => {
-    const source =
-      "//comment\nHello World\nthis is first test of stlap\nHave a good day";
-    const stlap = Stlap.fromString(source);
-    if (stlap instanceof Error) {
-      throw Error();
-    }
-    const output = stlap.toText();
-    const expected = "Hello Worldthis is first test of stlapHave a good day\n";
-
-    expect(output).toEqual<String>(expected);
-  });
-});
-
 describe("toText", () => {
   test("One paragraph", () => {
     const source =
@@ -80,19 +65,6 @@ describe("toText", () => {
     const output = stlap.toText();
     const expected =
       "Hello Worldthis is first test of stlap\n\nHave a good day\n\nTESTTESTTEST\n";
-    expect(output).toEqual(expected);
-  });
-
-  test("valid with espaced flag", () => {
-    const src =
-      "//comment\nHello World\n\\@flag f\nthis is first test of stlap\nHave a good day";
-    const s = Stlap.fromString(src);
-    if (s instanceof Error) {
-      throw Error;
-    }
-    const output = s.toText();
-    const expected =
-      "Hello World@flag fthis is first test of stlapHave a good day\n";
     expect(output).toEqual(expected);
   });
 
