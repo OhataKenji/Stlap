@@ -72,6 +72,7 @@ export enum Vertexkind {
   Comment,
   Sentence,
   ParagraphSeparater,
+  End,
 }
 
 type VertexParent = Vertex | null;
@@ -112,7 +113,7 @@ export class Parser {
     }
     const story = new Vertex(Vertexkind.Story, null, []);
 
-    let i = 9;
+    let i = 0;
     while (i < tokens.length) {
       // ParagraphSeparater
       if (i < tokens.length && tokens[i].kind === TokenKind.Newline) {
@@ -128,34 +129,46 @@ export class Parser {
       // Paragraph
       if (i < tokens.length && tokens[i].kind !== TokenKind.Newline) {
         const p = new Vertex(Vertexkind.Paragraph, story, []);
-        let v: Vertex;
-
-        // Get Vertexkind
-        if (tokens[i].kind === TokenKind.Words) {
-          v = new Vertex(Vertexkind.Sentence, p, []);
-        } else if (tokens[i].kind === TokenKind.CommentPrefix) {
-          v = new Vertex(Vertexkind.Comment, p, []);
-        } else if (tokens[i].kind === TokenKind.CommandPrefix) {
-          v = new Vertex(Vertexkind.Command, p, []);
-        } else {
-          return Error("Parse Error faital: Cannot recognize Vertexkind");
-        }
-
-        // read until newline
         while (i < tokens.length && tokens[i].kind !== TokenKind.Newline) {
-          v.children.push(tokens[i]);
-          i++;
-        }
-        if (i < tokens.length && tokens[i].kind === TokenKind.Newline) {
+          let v: Vertex;
+
+          // Get Vertexkind
+          if (tokens[i].kind === TokenKind.Words) {
+            v = new Vertex(Vertexkind.Sentence, p, []);
+          } else if (tokens[i].kind === TokenKind.CommentPrefix) {
+            v = new Vertex(Vertexkind.Comment, p, []);
+          } else if (tokens[i].kind === TokenKind.CommandPrefix) {
+            v = new Vertex(Vertexkind.Command, p, []);
+          } else {
+            return Error("Parse Error faital: Cannot recognize Vertexkind");
+          }
+
+          // read until newline
+          while (i < tokens.length && tokens[i].kind !== TokenKind.Newline) {
+            v.children.push(tokens[i]);
+            i++;
+          }
+          // TODO
+          // the case no file ending \n
+          // 現在行ごとのtokenizeでending \nがなくてもnewline tokenが作られるから
+          // この実装で良い
           v.children.push(tokens[i]); // add newline token
           i++;
-        } else {
-          // TODO the case no file ending \n
-        }
 
-        p.children.push(v);
+          p.children.push(v);
+        }
         story.children.push(p);
       }
+    }
+
+    // add End Vertex
+    if (
+      story.children[story.children.length - 1].kind ===
+      Vertexkind.ParagraphSeparater
+    ) {
+      story.children[story.children.length - 1].kind = Vertexkind.End;
+    } else {
+      story.children.push(new Vertex(Vertexkind.End, story, []));
     }
 
     return story;
@@ -390,6 +403,11 @@ export class Tokenizer {
   static tokenize(src: string): Token[] | Error {
     const tokens: Token[] = [];
     const lines = src.split("\n");
+
+    // because content is before ending \n
+    if (lines[lines.length - 1] === "") {
+      lines.pop();
+    }
 
     for (let i = 0; i < lines.length; i++) {
       let t: Token[] | Error;

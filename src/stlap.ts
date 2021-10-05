@@ -51,34 +51,32 @@ export class Stlap {
   }
 
   _toText(v: Vertex | Token, paragraphSeparater = "\n\n"): string {
-      if(v.kind === TokenKind.Words){
-          const r = v.getTextRange()
-          if(r === null){
-              return "" // TODO better error handling
-          }
-          const s = this.numberOfCharUntilLine[r.start.line] +
-              r.start.charcter
-          const e = this.numberOfCharUntilLine[r.end.line]+
-              r.end.charcter
-          return this.source.slice(s,e+1)
+    if (v.kind === TokenKind.Words) {
+      const r = v.getTextRange();
+      if (r === null) {
+        return ""; // TODO better error handling
       }
-      if(v.kind === Vertexkind.Sentence){
-        return v.children
-          .map((c) => this._toText(c, paragraphSeparater))
-          .join("");
-      } else if(v.kind === Vertexkind.Paragraph){
-        return v.children
-          .map((c) => this._toText(c, paragraphSeparater))
-          .join("");
-      } else if(v.kind === Vertexkind.ParagraphSeparater){
-          return paragraphSeparater
-      } else if(v.kind ===  Vertexkind.Story){
-        return v.children
-          .map((c) => this._toText(c, paragraphSeparater))
-          .join("");
-      }else{
-        return "";
-      }
+      const s = this.numberOfCharUntilLine[r.start.line] + r.start.charcter;
+      const e = this.numberOfCharUntilLine[r.end.line] + r.end.charcter;
+      return this.source.slice(s, e + 1);
+    } else if (v.kind === Vertexkind.Sentence) {
+      return v.children
+        .map((c) => this._toText(c, paragraphSeparater))
+        .join("");
+    } else if (v.kind === Vertexkind.Paragraph) {
+      return v.children
+        .map((c) => this._toText(c, paragraphSeparater))
+        .join("");
+    } else if (v.kind === Vertexkind.ParagraphSeparater) {
+      return paragraphSeparater;
+    } else if (v.kind === Vertexkind.Story) {
+      return v.children
+        .map((c) => this._toText(c, paragraphSeparater))
+        .join("");
+    } else if (v.kind === Vertexkind.End) {
+      return "\n"; // output should end with \n
+    } else {
+      return "";
     }
   }
 

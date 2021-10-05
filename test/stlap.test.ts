@@ -2,6 +2,21 @@ import { Stlap } from "../src/stlap";
 import fs from "fs";
 import path from "path";
 
+describe("Stlap", () => {
+  test("One paragraph", () => {
+    const source =
+      "//comment\nHello World\nthis is first test of stlap\nHave a good day";
+    const stlap = Stlap.fromString(source);
+    if (stlap instanceof Error) {
+      throw Error();
+    }
+    const output = stlap.toText();
+    const expected = "Hello Worldthis is first test of stlapHave a good day\n";
+
+    expect(output).toEqual<String>(expected);
+  });
+});
+
 describe("toText", () => {
   test("One paragraph", () => {
     const source =

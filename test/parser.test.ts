@@ -7,7 +7,9 @@ import {
   tokenizeCommentLine,
   tokenizeSentenceLine,
   Vertex,
+  Vertexkind,
   Parser,
+  Tokenizer,
 } from "../src/parser";
 import fs from "fs";
 import path from "path";
@@ -27,6 +29,51 @@ describe("Parser", () => {
       const v = Parser.parse(src);
       expect(v).toBeInstanceOf(Vertex);
     }
+  });
+
+  test("One paragraph", () => {
+    const source = "Hello World\nHave a good day\n";
+    const ts = Tokenizer.tokenize(source);
+    const v = Parser.parse(source);
+    if (v instanceof Error) {
+      throw Error();
+    }
+    const expected = new Vertex(Vertexkind.Story, null, []);
+    const p = new Vertex(Vertexkind.Paragraph, expected, []);
+    const s = [
+      new Vertex(Vertexkind.Sentence, p, [
+        new Token(
+          TokenKind.Words,
+          new Position(0, 0),
+          new Position(0, 0),
+          new Position(0, "Hello World".length - 1)
+        ),
+        new Token(
+          TokenKind.Newline,
+          new Position(0, "Hello World".length),
+          new Position(0, "Hello World".length),
+          new Position(0, "Hello World".length)
+        ),
+      ]),
+      new Vertex(Vertexkind.Sentence, p, [
+        new Token(
+          TokenKind.Words,
+          new Position(1, 0),
+          new Position(1, 0),
+          new Position(1, "Have a good day".length - 1)
+        ),
+        new Token(
+          TokenKind.Newline,
+          new Position(1, "Have a good day".length),
+          new Position(1, "Have a good day".length),
+          new Position(1, "Have a good day".length)
+        ),
+      ]),
+    ];
+    p.children.push(...s);
+    expected.children.push(p);
+    expected.children.push(new Vertex(Vertexkind.End, expected, []));
+    expect(v).toEqual(expected);
   });
 });
 
