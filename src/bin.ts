@@ -1,6 +1,6 @@
 import { version } from "../package.json";
 import { Command } from "commander";
-import { getFilename, getBuffer } from "./util";
+import { getFilename, getBuffer, getDiagnosticsAsPrettyString } from "./util";
 import { Stlap } from "./stlap";
 
 type ExitStatus = number;
@@ -43,14 +43,20 @@ async function main(): Promise<ExitStatus> {
   //
   const opt = program.opts();
   if (opt.check) {
-    console.log("%j", stlap.diagnostics);
-    return 0;
+    const o = getDiagnosticsAsPrettyString(stlap);
+    if (!(o instanceof Error)) {
+      console.log(o);
+      return 0;
+    }
   } else if (opt.force || stlap.isValid()) {
     process.stdout.write(stlap.toText());
     return 0;
   } else if (!stlap.isValid()) {
-    console.log("%j", stlap.diagnostics);
-    return 1;
+    const o = getDiagnosticsAsPrettyString(stlap);
+    if (!(o instanceof Error)) {
+      console.log(o);
+      return 1;
+    }
   }
 
   console.error("Unexpected Beheivior");

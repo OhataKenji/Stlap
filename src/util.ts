@@ -1,4 +1,5 @@
 import fs from "fs";
+import { Diagnostic, Stlap } from "./stlap";
 
 export function getFilename(args: string[]): string | null | Error {
   switch (args.length) {
@@ -42,4 +43,52 @@ export async function getBuffer(
       }
   }
   return Promise.resolve(b);
+}
+
+export function DiagnosticAsPrettyString(
+  d: Diagnostic,
+  s: Stlap
+): string | Error {
+  // refer definition of Error severity
+  const errorkind = new Map<number, string>();
+  errorkind.set(1, "error");
+  errorkind.set(2, "warning");
+  errorkind.set(3, "information");
+  errorkind.set(4, "hint");
+
+  const header = `${errorkind.get(d.severity || 1)}: ${d.message}\n`;
+  const lineDigit = d.range.end.line.toString().length;
+  const segment: string[] = [" ".repeat(lineDigit) + "|"];
+
+  // TODO might need to accept multiline version
+  if (d.range.start.line === d.range.end.line) {
+    const line = s.getLine(d.range.start.line);
+    if (line instanceof Error) {
+      return Error(`Message Construction Error ${line.message}`);
+    }
+    segment.push(`${d.range.start.line}| ${line}`);
+    segment.push(
+      `${" ".repeat(lineDigit)}| ${" ".repeat(
+        d.range.start.charcter
+      )}${"^".repeat(d.range.end.charcter - d.range.start.charcter + 1)}`
+    );
+    segment.push(" ".repeat(lineDigit) + "|");
+  }
+
+  return header + segment.join("\n");
+}
+
+export function getDiagnosticsAsPrettyString(
+  s: Stlap,
+  limit: number = 5
+): string | Error {
+  const messages: string[] = [];
+  for (const d of s.diagnostics.slice(0, limit)) {
+    const msg = DiagnosticAsPrettyString(d, s);
+    if (msg instanceof Error) {
+      return msg;
+    }
+    messages.push(msg);
+  }
+  return messages.join("\n\n");
 }
