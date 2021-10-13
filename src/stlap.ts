@@ -234,4 +234,13 @@ export class Stlap {
       return this.source.slice(s, e + 1);
     }
   }
+
+  getLine(line: number): string | Error {
+    const s = this.numberOfCharUntilLine[line];
+    const e = this.numberOfCharUntilLine[line + 1] || this.source.length + 2;
+    if (s === undefined) {
+      return Error("Line number out of range");
+    }
+    return this.source.slice(s, e - 1);
+  }
 }
