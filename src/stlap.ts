@@ -171,7 +171,7 @@ export class Stlap {
               message:
                 arg +
                 " is already used" +
-                " " +
+                " フラグ" +
                 arg +
                 " はすでに使用されています",
               severity: DiagnosticSeverity.Error,
@@ -197,7 +197,7 @@ export class Stlap {
                 " is not flagged" +
                 " " +
                 arg +
-                " はフラグがありません\n@flag " +
+                " フラグがありません\n@flag " +
                 arg +
                 "\nをしてください",
               severity: DiagnosticSeverity.Error,
