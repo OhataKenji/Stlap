@@ -1,6 +1,7 @@
 import { Stlap } from "../src/stlap";
 import fs from "fs";
 import path from "path";
+import { Range } from "../src/parser";
 
 describe("toText", () => {
   test("One paragraph", () => {
@@ -244,5 +245,54 @@ describe("isValid", () => {
     }
     const output = s.isValid();
     expect(output).toEqual(false);
+  });
+});
+
+describe("getText", () => {
+  test("full", () => {
+    const src = fs
+      .readFileSync(
+        path.join(__dirname, "example", "3paragraphWithComment.txt")
+      )
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const o = s.getText();
+    expect(o).toEqual(src);
+  });
+  test("one line", () => {
+    const src = "abcdefg";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const o = s.getText(
+      new Range({ line: 0, charcter: 0 }, { line: 0, charcter: 2 })
+    );
+    expect(o).toEqual("abc");
+  });
+  test("multi line", () => {
+    const src = "abcdefg\nABCDEFG";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const o = s.getText(
+      new Range({ line: 0, charcter: 4 }, { line: 1, charcter: 5 })
+    );
+    expect(o).toEqual("efg\nABCDEF");
+  });
+  test("behave like string#slice() when out of range", () => {
+    const src = "abcdefg";
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const o = s.getText(
+      new Range({ line: 0, charcter: 0 }, { line: 0, charcter: 1000 })
+    );
+    expect(o).toEqual(src);
   });
 });

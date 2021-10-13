@@ -223,4 +223,15 @@ export class Stlap {
         .length
     );
   }
+
+  getText(range?: Range): string {
+    if (range === undefined) {
+      return this.source;
+    } else {
+      const s =
+        this.numberOfCharUntilLine[range.start.line] + range.start.charcter;
+      const e = this.numberOfCharUntilLine[range.end.line] + range.end.charcter;
+      return this.source.slice(s, e + 1);
+    }
+  }
 }
