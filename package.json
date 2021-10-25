@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "description": "Stlap: the STory LAnguage Processor",
   "main": "./dst/main.js",
+  "types": "./dst/src/main.d.ts",
   "bin": {
     "stlap": "./dst/bin.js"
   },

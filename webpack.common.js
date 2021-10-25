@@ -8,6 +8,10 @@ module.exports = {
   output: {
     path: path.join(__dirname, "dst"),
     filename: "[name].js",
+    library: {
+      name: "stlap",
+      type: "umd",
+    },
   },
 
   module: {
