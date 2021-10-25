@@ -10,7 +10,7 @@ import {
   Vertexkind,
   Parser,
   Tokenizer,
-} from "../src/parser";
+} from "../src/core/parser";
 import fs from "fs";
 import path from "path";
 

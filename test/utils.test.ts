@@ -1,4 +1,4 @@
-import { getFilename, getBuffer } from "../src/util";
+import { getFilename, getBuffer } from "../src/cli/util";
 
 describe("getFilename", () => {
   test("No arguments", () => {
