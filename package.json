@@ -5,7 +5,7 @@
   "main": "./dst/main.js",
   "types": "./dst/src/main.d.ts",
   "bin": {
-    "stlap": "./dst/bin.js"
+    "stlap": "./dst/cli.js"
   },
   "scripts": {
     "test": "jest",

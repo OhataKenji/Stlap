@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 module.exports = {
   target: "node",
-  entry: { main: "./src/main.ts", bin: "./src/bin.ts" },
+  entry: { main: "./src/main.ts", cli: "./src/cli/cli.ts" },
 
   output: {
     path: path.join(__dirname, "dst"),
@@ -29,7 +29,7 @@ module.exports = {
     new webpack.BannerPlugin({
       banner: "#!/usr/bin/env node",
       raw: true,
-      include: "bin.js",
+      include: "cli.js",
     }),
   ],
 };

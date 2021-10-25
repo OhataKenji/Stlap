@@ -1,2 +1,2 @@
-export * from "./stlap";
-export * from "./parser";
+export * from "./core/stlap";
+export * from "./core/parser";

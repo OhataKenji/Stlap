@@ -1,7 +1,7 @@
-import { Stlap } from "../src/stlap";
+import { Stlap } from "../src/core/stlap";
 import fs from "fs";
 import path from "path";
-import { Range } from "../src/parser";
+import { Range } from "../src/core/parser";
 
 describe("toText", () => {
   test("One paragraph", () => {

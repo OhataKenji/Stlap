@@ -1,5 +1,5 @@
 import fs from "fs";
-import { Diagnostic, Stlap } from "./stlap";
+import { Diagnostic, Stlap } from "../main";
 
 export function getFilename(args: string[]): string | null | Error {
   switch (args.length) {

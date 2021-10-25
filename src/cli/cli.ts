@@ -1,7 +1,7 @@
-import { version } from "../package.json";
+import { version } from "../../package.json";
 import { Command } from "commander";
 import { getFilename, getBuffer, getDiagnosticsAsPrettyString } from "./util";
-import { Stlap } from "./stlap";
+import { Stlap } from "../main";
 
 type ExitStatus = number;
 
