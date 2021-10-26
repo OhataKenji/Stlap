@@ -296,3 +296,19 @@ describe("getText", () => {
     expect(o).toEqual(src);
   });
 });
+
+describe("validate", () => {
+  test("too many collect", () => {
+    const src = fs
+      .readFileSync(path.join(__dirname, "example", "tooManyCollect.txt"))
+      .toString();
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const o = s.diagnostics.filter(
+      (d) => d.message.includes("already") && d.message.includes("completed")
+    );
+    expect(o.length > 0).toBe(true);
+  });
+});
