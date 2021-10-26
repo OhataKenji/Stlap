@@ -115,9 +115,9 @@ export class Stlap {
   }
 
   validate(): Diagnostic[] {
-    const register = new Set<string>();
+    const completed = new Set<string>();
     const remainingFlag = new Map<string, Token>();
-    const ds = this._validate(this.story, register, remainingFlag);
+    const ds = this._validate(this.story, completed, remainingFlag);
     for (let [arg, t] of remainingFlag) {
       ds.push({
         range: new Range(t.fullStart, t.end),
@@ -137,7 +137,7 @@ export class Stlap {
 
   _validate(
     v: Vertex | Token,
-    register: Set<string>,
+    completed: Set<string>,
     remainingFlag: Map<string, Token>
   ): Diagnostic[] {
     if (v instanceof Token) {
@@ -164,7 +164,7 @@ export class Stlap {
         const e = this.numberOfCharUntilLine[v.end.line] + v.end.charcter;
         const arg = this.source.slice(s, e + 1);
 
-        if (register.has(arg)) {
+        if (remainingFlag.has(arg) || completed.has(arg)) {
           return [
             {
               range: new Range(v.fullStart, v.end),
@@ -178,7 +178,6 @@ export class Stlap {
             },
           ];
         } else {
-          register.add(arg);
           remainingFlag.set(arg, v);
         }
       } else if (v.kind === TokenKind.CollectArg) {
@@ -186,8 +185,24 @@ export class Stlap {
         const e = this.numberOfCharUntilLine[v.end.line] + v.end.charcter;
         const arg = this.source.slice(s, e + 1);
 
-        if (remainingFlag.has(arg)) {
+        if (remainingFlag.has(arg) && !completed.has(arg)) {
           remainingFlag.delete(arg);
+          completed.add(arg);
+        } else if (completed.has(arg)) {
+          return [
+            {
+              range: new Range(v.fullStart, v.end),
+              message:
+                arg +
+                " is already completed" +
+                " " +
+                arg +
+                " フラグはすでに回収されています\n@flag " +
+                arg +
+                "\nを消去してください",
+              severity: DiagnosticSeverity.Error,
+            },
+          ];
         } else {
           return [
             {
@@ -208,7 +223,7 @@ export class Stlap {
       return [];
     } else {
       return v.children
-        .map((c) => this._validate(c, register, remainingFlag))
+        .map((c) => this._validate(c, completed, remainingFlag))
         .flat();
     }
   }

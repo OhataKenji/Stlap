@@ -302,17 +302,39 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
   }
   // space
   const space = match[2];
-  tokens.push(
-    new Token(
-      TokenKind.Space,
-      new Position(lineNumber, commandName.length + 1),
-      new Position(lineNumber, commandName.length + space.length),
-      new Position(lineNumber, commandName.length + space.length)
-    )
-  );
-  // name
-  const name = match[3];
-  if (commandName === "flag" || commandName === "collect") {
+  if (space !== "") {
+    tokens.push(
+      new Token(
+        TokenKind.Space,
+        new Position(lineNumber, commandName.length + 1),
+        new Position(lineNumber, commandName.length + space.length),
+        new Position(lineNumber, commandName.length + space.length)
+      )
+    );
+  } else {
+    tokens.push(
+      new Token(
+        TokenKind.MissingToken,
+        new Position(lineNumber, commandName.length + 1),
+        new Position(lineNumber, commandName.length + 1),
+        new Position(lineNumber, commandName.length + 1),
+        "Expected Space:スペースがありません"
+      )
+    );
+  }
+  // argument
+  const argument = match[3];
+  if (argument === "") {
+    tokens.push(
+      new Token(
+        TokenKind.MissingToken,
+        new Position(lineNumber, commandName.length + space.length + 1),
+        new Position(lineNumber, commandName.length + space.length + 1),
+        new Position(lineNumber, commandName.length + space.length + 1),
+        "Expected Argument:フラグ名がありません"
+      )
+    );
+  } else if (commandName === "flag" || commandName === "collect") {
     tokens.push(
       new Token(
         commandName === "flag" ? TokenKind.FlagArg : TokenKind.CollectArg,
@@ -320,7 +342,7 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
         new Position(lineNumber, commandName.length + space.length + 1),
         new Position(
           lineNumber,
-          commandName.length + space.length + name.length
+          commandName.length + space.length + argument.length
         )
       )
     );
@@ -332,7 +354,7 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
         new Position(lineNumber, commandName.length + space.length + 1),
         new Position(
           lineNumber,
-          commandName.length + space.length + name.length
+          commandName.length + space.length + argument.length
         ),
         "Unexpected Token: トークンを判別できませんでした"
       )
@@ -346,15 +368,15 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
         TokenKind.SkippedToken,
         new Position(
           lineNumber,
-          commandName.length + space.length + name.length + 1
+          commandName.length + space.length + argument.length + 1
         ),
         new Position(
           lineNumber,
-          commandName.length + space.length + name.length + 1
+          commandName.length + space.length + argument.length + 1
         ),
         new Position(
           lineNumber,
-          commandName.length + space.length + name.length + skip.length
+          commandName.length + space.length + argument.length + skip.length
         ),
         "Unexpected: 予期しない文字列です"
       )
@@ -366,7 +388,7 @@ export const tokenizeCommand: TokenizeLine = function (line, lineNumber) {
       TokenKind.Newline,
       new Position(
         lineNumber,
-        commandName.length + space.length + name.length + skip.length + 1
+        commandName.length + space.length + argument.length + skip.length + 1
       ),
       new Position(lineNumber, line.length),
       new Position(lineNumber, line.length)
