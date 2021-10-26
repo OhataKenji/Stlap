@@ -66,7 +66,7 @@ export function DiagnosticAsPrettyString(
     if (line instanceof Error) {
       return Error(`Message Construction Error ${line.message}`);
     }
-    segment.push(`${d.range.start.line}| ${line}`);
+    segment.push(`${d.range.start.line + 1}| ${line}`);
     segment.push(
       `${" ".repeat(lineDigit)}| ${" ".repeat(
         d.range.start.charcter
