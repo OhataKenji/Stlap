@@ -40,7 +40,7 @@ describe("getBuffer", () => {
 describe("pretty print", () => {
   test("simple", () => {
     const src = fs
-      .readFileSync(path.join(__dirname, "example", "DuplicatedFlag.txt"))
+      .readFileSync(path.join(__dirname, "example", "Duplicatedflag.txt"))
       .toString();
     const s = Stlap.fromString(src);
     if (s instanceof Error) {
