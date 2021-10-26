@@ -538,6 +538,85 @@ describe("tokenizeCommand", () => {
     ];
     expect(o).toEqual(expected);
   });
+  test("command name withoud space and arg", () => {
+    const input = "@flag";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.Flag,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, "flag".length)
+      ),
+      new Token(
+        TokenKind.MissingToken,
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 1),
+        "Expected Space:スペースがありません"
+      ),
+      new Token(
+        TokenKind.MissingToken,
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 1),
+        new Position(i, "flag".length + 1),
+        "Expected Argument:フラグ名がありません"
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
+  test("command name without arg", () => {
+    const input = "@collect ";
+    const i = 0;
+    const o = tokenizeCommand(input, i);
+    const expected = [
+      new Token(
+        TokenKind.CommandPrefix,
+        new Position(i, 0),
+        new Position(i, 0),
+        new Position(i, 0)
+      ),
+      new Token(
+        TokenKind.Collect,
+        new Position(i, 1),
+        new Position(i, 1),
+        new Position(i, "collect".length)
+      ),
+      new Token(
+        TokenKind.Space,
+        new Position(i, "collect".length + 1),
+        new Position(i, "collect".length + 1),
+        new Position(i, "collect".length + 1)
+      ),
+      new Token(
+        TokenKind.MissingToken,
+        new Position(i, "collect".length + 2),
+        new Position(i, "collect".length + 2),
+        new Position(i, "collect".length + 2),
+        "Expected Argument:フラグ名がありません"
+      ),
+      new Token(
+        TokenKind.Newline,
+        new Position(i, input.length),
+        new Position(i, input.length),
+        new Position(i, input.length)
+      ),
+    ];
+    expect(o).toEqual(expected);
+  });
   test("empty", () => {
     const input = "";
     const i = 0;
