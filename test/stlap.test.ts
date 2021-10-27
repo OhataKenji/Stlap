@@ -127,6 +127,30 @@ describe("toText", () => {
 
     expect(output).toEqual<String>(expected);
   });
+
+  test("command and comment in the same paragraph", () => {
+    const src = fs
+      .readFileSync(
+        path.join(__dirname, "example", "commandAndCommentInSameParagraph.txt")
+      )
+      .toString();
+    const expected = fs
+      .readFileSync(
+        path.join(
+          __dirname,
+          "example",
+          "commandAndCommentInSameParagraph_toText.txt"
+        )
+      )
+      .toString();
+
+    const s = Stlap.fromString(src);
+    if (s instanceof Error) {
+      throw Error;
+    }
+    const output = s.toText();
+    expect(output).toEqual(expected);
+  });
 });
 
 describe("isValid", () => {
