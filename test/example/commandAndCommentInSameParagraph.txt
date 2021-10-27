@@ -1,0 +1,9 @@
+sample
+
+@flag a
+//comment
+
+should be paragraph2
+
+@collect a
+

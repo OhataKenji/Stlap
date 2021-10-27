@@ -55,13 +55,13 @@ export class Stlap {
       if (v.kind === TokenKind.Words) {
         const r = v.getTextRange();
         if (r === null) {
-          return [""]; // TODO better error handling
+          return []; // TODO better error handling
         }
         const s = this.numberOfCharUntilLine[r.start.line] + r.start.charcter;
         const e = this.numberOfCharUntilLine[r.end.line] + r.end.charcter;
         return [this.source.slice(s, e + 1)];
       } else {
-        return [""];
+        return [];
       }
     } else {
       if (v.kind === Vertexkind.Sentence) {
@@ -81,15 +81,15 @@ export class Stlap {
             : this._toTextArray(c, paragraphSeparater)
         );
 
-        // ""を挟むようなparagraphSepapraterの片方を消去
-        // [..., PS,[""], PS, ...] -> [...,[""], [""], PS, ...]
+        // []を挟むようなparagraphSepapraterの片方を消去
+        // [..., PS,[], PS, ...] -> [...,[], [], PS, ...]
         for (let i = 0; i < textAndSeps.length - 2; i++) {
           if (
             textAndSeps[i] instanceof Vertex &&
-            textAndSeps[i + 1].toString() === [""].toString() && // TODO better array comparison
+            textAndSeps[i + 1].toString().length === 0 &&
             textAndSeps[i + 2] instanceof Vertex
           ) {
-            textAndSeps[i] = [""];
+            textAndSeps[i] = [];
           }
         }
 
@@ -109,7 +109,7 @@ export class Stlap {
           )
           .flat();
       } else {
-        return [""];
+        return [];
       }
     }
   }
