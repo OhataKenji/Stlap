@@ -54,7 +54,7 @@ async function main(): Promise<ExitStatus> {
   } else if (!stlap.isValid()) {
     const o = getDiagnosticsAsPrettyString(stlap);
     if (!(o instanceof Error)) {
-      console.log(o);
+      console.error(o);
       return 1;
     }
   }
