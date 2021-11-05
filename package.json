@@ -1,6 +1,6 @@
 {
   "name": "stlap",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Stlap: the STory LAnguage Processor",
   "main": "./dst/main.js",
   "types": "./dst/src/main.d.ts",
