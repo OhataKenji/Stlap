@@ -151,6 +151,24 @@ describe("toText", () => {
     const output = s.toText();
     expect(output).toEqual(expected);
   });
+
+  test("begin with comment", () => {
+    for (const fileName of ["beginWithComment", "endWithComment"]) {
+      const src = fs
+        .readFileSync(path.join(__dirname, "example", fileName + ".txt"))
+        .toString();
+      const expected = fs
+        .readFileSync(path.join(__dirname, "example", fileName + "_toText.txt"))
+        .toString();
+
+      const s = Stlap.fromString(src);
+      if (s instanceof Error) {
+        throw Error;
+      }
+      const output = s.toText();
+      expect(output).toEqual(expected);
+    }
+  });
 });
 
 describe("isValid", () => {

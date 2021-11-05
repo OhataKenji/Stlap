@@ -46,11 +46,11 @@ export class Stlap {
     return new Stlap(s, source, numberOfCharUntilLine);
   }
 
-  toText(): string {
-    return this._toTextArray(this.story).join("");
+  toText(separater = "\n\n"): string {
+    return this._toTextArray(this.story).join(separater) + "\n";
   }
 
-  _toTextArray(v: Vertex | Token, paragraphSeparater = "\n\n"): string[] {
+  _toTextArray(v: Vertex | Token): string[] {
     if (v instanceof Token) {
       if (v.kind === TokenKind.Words) {
         const r = v.getTextRange();
@@ -65,49 +65,23 @@ export class Stlap {
       }
     } else {
       if (v.kind === Vertexkind.Sentence) {
-        return v.children
-          .map((c) => this._toTextArray(c, paragraphSeparater))
-          .flat();
+        return v.children.map((c) => this._toTextArray(c)).flat();
       } else if (v.kind === Vertexkind.Paragraph) {
-        return v.children
-          .map((c) => this._toTextArray(c, paragraphSeparater))
-          .flat();
-      } else if (v.kind === Vertexkind.ParagraphSeparater) {
-        return [paragraphSeparater];
-      } else if (v.kind === Vertexkind.Story) {
-        const textAndSeps = v.children.map((c) =>
-          c.kind === Vertexkind.ParagraphSeparater
-            ? c
-            : this._toTextArray(c, paragraphSeparater)
-        );
-
-        // []を挟むようなparagraphSepapraterの片方を消去
-        // [..., PS,[], PS, ...] -> [...,[], [], PS, ...]
-        for (let i = 0; i < textAndSeps.length - 2; i++) {
-          if (
-            textAndSeps[i] instanceof Vertex &&
-            textAndSeps[i + 1].toString().length === 0 &&
-            textAndSeps[i + 2] instanceof Vertex
-          ) {
-            textAndSeps[i] = [];
-          }
-        }
-
-        // 先頭は""，末尾は"\n"
-        if (textAndSeps[0] instanceof Vertex) {
-          textAndSeps[0] = [""];
-        }
-        if (textAndSeps[textAndSeps.length - 1] instanceof Vertex) {
-          textAndSeps[textAndSeps.length - 1] = ["\n"];
+        const textArray = v.children.map((c) => this._toTextArray(c)).flat();
+        if (textArray.length > 0) {
+          return [textArray.join("")];
         } else {
-          textAndSeps.push(["\n"]);
+          return [];
         }
-
-        return textAndSeps
-          .map((v) =>
-            v instanceof Vertex ? this._toTextArray(v, paragraphSeparater) : v
-          )
+      } else if (v.kind === Vertexkind.ParagraphSeparater) {
+        return [];
+      } else if (v.kind === Vertexkind.Story) {
+        const textArray = v.children
+          .map((c) => this._toTextArray(c))
+          .filter((a) => a.length > 0)
           .flat();
+
+        return textArray;
       } else {
         return [];
       }
